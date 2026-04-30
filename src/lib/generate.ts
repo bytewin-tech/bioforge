@@ -1,5 +1,5 @@
+import { load } from 'cheerio';
 import axios from 'axios';
-import cheerio from 'cheerio';
 
 interface BioLinkData {
   title: string;
@@ -18,7 +18,7 @@ export async function generateBioLink(url: string): Promise<BioLinkData> {
   });
 
   const html = response.data;
-  const $ = cheerio.load(html);
+  const $ = load(html);
 
   // Extract metadata
   const title =
