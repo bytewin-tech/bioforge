@@ -1,40 +1,29 @@
-# Bioforge ✨
+# Bioforge
 
-**AI-powered link-in-bio generator.** Paste any URL → get a stunning shareable page.
+Premium QR and barcode generator for URLs, text, contact details, and simple SKUs.
 
-## Live
+## What It Does
 
-🔗 **https://outstanding-grace-production-c4f7.up.railway.app**
+1. Enter arbitrary URL/text for a QR code, or SKU-style text for a Code 39 barcode.
+2. See a live browser-rendered preview.
+3. Copy the source content or SVG markup.
+4. Download SVG/PNG assets, or use the Web Share API when supported.
 
-## How It Works
-
-1. Enter any URL (Twitter/X profile, personal site, etc.)
-2. Bioforge fetches the page metadata (title, description, image)
-3. AI generates a beautiful link-in-bio page
-4. Share the generated link — no signup, no database
+Bioforge does not create persistent short links because this repo has no backend storage. Legacy encoded link-in-bio routes now redirect to the generator instead of producing long base64 URLs.
 
 ## Tech Stack
 
-- **Next.js 16** (App Router, Turbopack)
-- **Tailwind CSS** (gradient dark theme)
-- **Cheerio + Axios** (web scraping)
-- **Gemini 2.0 Flash** or **Groq Llama 3.1** (AI generation)
-- **Railway** (deployment)
+- Next.js 16 App Router
+- React 19
+- Tailwind CSS
+- Local QR encoder and Code 39 SVG renderer in `src/lib/codes.ts`
 
 ## Key Files
 
-- `src/app/page.tsx` — Home page with URL input
-- `src/app/generate/page.tsx` — Generates bio from URL
-- `src/app/view/[encoded]/page.tsx` — Renders the link-in-bio page
-- `src/lib/generate.ts` — Core logic (fetch + AI + extract)
-
-## Environment Variables
-
-```
-GEMINI_API_KEY=...   # Google Gemini (free tier available)
-# or
-GROQ_API_KEY=...    # Groq (Llama 3.1 70B)
-```
+- `src/app/page.tsx` - mobile-first generator UI and browser actions
+- `src/lib/codes.ts` - QR and barcode SVG generation
+- `src/app/generate/page.tsx` - legacy redirect
+- `src/app/view/[encoded]/page.tsx` - legacy redirect
 
 ## Local Dev
 
@@ -42,7 +31,3 @@ GROQ_API_KEY=...    # Groq (Llama 3.1 70B)
 npm install
 npm run dev
 ```
-
-## No Backend
-
-All state is encoded in the URL using base64url. No database, no auth, no server-side storage.
