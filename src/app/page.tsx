@@ -98,6 +98,13 @@ const qrColorControls: { label: string; key: QrColorKey; fallback: string }[] = 
   { label: "Accent", key: "accent", fallback: "#c8613f" },
 ];
 
+const scanChecklist = [
+  "Scan-safe output is on by default.",
+  "Black ink on white paper is locked for phone scanning.",
+  "Quiet zone stays clear around the code.",
+  "Test from real phone distance and light before printing.",
+];
+
 function svgToDataUrl(svg: string) {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
@@ -341,7 +348,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="grid flex-1 gap-3 xl:grid-cols-[370px_minmax(420px,1fr)_330px]">
+        <div className="grid flex-1 gap-3 xl:grid-cols-[390px_minmax(420px,1fr)_350px]">
           <aside className="studio-panel flex min-h-0 flex-col gap-3 p-3 sm:p-4">
             <section className="tool-section">
               <div className="section-heading">
@@ -403,79 +410,20 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="tool-section">
+            <section className="tool-section safety-section">
               <div className="section-heading">
                 <span>02</span>
                 <div>
-                  <p>Style system</p>
-                  <h2>QR customization</h2>
+                  <p>Safety gate</p>
+                  <h2>Safe for phones</h2>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-2">
-                {qrPresets.map((preset) => (
-                  <button
-                    key={preset.name}
-                    type="button"
-                    onClick={() => applyPreset(preset)}
-                    className="preset-row group"
-                  >
-                    <span>
-                      <strong>{preset.name}</strong>
-                      <small>{preset.description}</small>
-                    </span>
-                    <em>{preset.badge}</em>
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {qrColorControls.map(({ label, key, fallback }) => (
-                  <label key={key} className="field-label">
-                    <span className="mb-1 block">{label}</span>
-                    <input
-                      type="color"
-                      value={qrStyle[key] ?? fallback}
-                      onChange={(event) => updateQrStyle({ [key]: event.target.value })}
-                      className="h-11 w-full rounded-md border border-[#a98f5f]/70 bg-[#fff8e6] p-1"
-                      aria-label={`${label} color`}
-                    />
-                  </label>
-                ))}
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <label className="field-label">
-                  <span className="mb-1 block">Modules</span>
-                  <select
-                    value={qrStyle.dotStyle ?? "square"}
-                    onChange={(event) =>
-                      updateQrStyle({ dotStyle: event.target.value as QrDotStyle })
-                    }
-                    className="control-input"
-                  >
-                    <option value="square">Square</option>
-                    <option value="rounded">Rounded</option>
-                    <option value="dots">Dots</option>
-                  </select>
-                </label>
-                <label className="field-label">
-                  <span className="mb-1 block">Corners</span>
-                  <select
-                    value={qrStyle.cornerStyle ?? "square"}
-                    onChange={(event) =>
-                      updateQrStyle({ cornerStyle: event.target.value as QrCornerStyle })
-                    }
-                    className="control-input"
-                  >
-                    <option value="square">Square</option>
-                    <option value="rounded">Rounded</option>
-                  </select>
-                </label>
-              </div>
-
-              <label className="mt-4 flex items-center justify-between rounded-md border border-[#6f8f62]/70 bg-[#e8efd9] px-3 py-3 text-sm font-bold text-[#314628]">
-                Phone scan-safe
+              <label className="scan-toggle mt-4">
+                <span>
+                  <strong>Phone scan-safe</strong>
+                  <small>Default export: black-on-white QR and barcode with no decoration.</small>
+                </span>
                 <input
                   type="checkbox"
                   checked={scanSafe}
@@ -499,10 +447,101 @@ export default function Home() {
                 />
               </label>
 
-              <p className="mt-2 rounded-md border border-[#c7b078]/70 bg-[#fff6dc] px-3 py-2 text-xs font-semibold leading-5 text-[#6a542f]">
-                Scan-safe locks the export to black ink, white paper, square modules, wider quiet
-                zone, and no center logo. Turn it off only for decorative campaigns.
-              </p>
+              <div className="scan-safe-card mt-3">
+                <p>Scan-safe output is on by default</p>
+                <strong>{scanSafe ? "Protected phone output" : "Decorative mode active"}</strong>
+                <span>
+                  {scanSafe
+                    ? "Decorative styling is disabled so phones get high-contrast output with clear quiet zones."
+                    : "Phone scanning may fail if contrast drops, modules shrink, or logos cover the matrix."}
+                </span>
+              </div>
+            </section>
+
+            <section className="tool-section">
+              <div className="section-heading">
+                <span>03</span>
+                <div>
+                  <p>Style system</p>
+                  <h2>Decorative styling</h2>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-2">
+                {qrPresets.map((preset) => (
+                  <button
+                    key={preset.name}
+                    type="button"
+                    onClick={() => applyPreset(preset)}
+                    className="preset-row group"
+                  >
+                    <span>
+                      <strong>{preset.name}</strong>
+                      <small>{preset.description}</small>
+                    </span>
+                    <em>{preset.badge}</em>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-md border border-[#c7b078]/70 bg-[#fff6dc] px-3 py-2 text-xs font-semibold leading-5 text-[#6a542f]">
+                Styling is only decorative. Keep scan-safe on for production labels, posters, and
+                anything a phone must read quickly.
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {qrColorControls.map(({ label, key, fallback }) => (
+                  <label key={key} className="field-label">
+                    <span className="mb-1 block">{label}</span>
+                    <input
+                      type="color"
+                      value={
+                        scanSafe && key !== "accent"
+                          ? key === "foreground"
+                            ? "#000000"
+                            : "#ffffff"
+                          : qrStyle[key] ?? fallback
+                      }
+                      disabled={scanSafe && key !== "accent"}
+                      onChange={(event) => updateQrStyle({ [key]: event.target.value })}
+                      className="h-12 w-full rounded-md border border-[#a98f5f]/70 bg-[#fff8e6] p-1 disabled:opacity-50"
+                      aria-label={`${label} color`}
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <label className="field-label">
+                  <span className="mb-1 block">Modules</span>
+                  <select
+                    value={scanSafe ? "square" : qrStyle.dotStyle ?? "square"}
+                    disabled={scanSafe}
+                    onChange={(event) =>
+                      updateQrStyle({ dotStyle: event.target.value as QrDotStyle })
+                    }
+                    className="control-input disabled:opacity-50"
+                  >
+                    <option value="square">Square</option>
+                    <option value="rounded">Rounded</option>
+                    <option value="dots">Dots</option>
+                  </select>
+                </label>
+                <label className="field-label">
+                  <span className="mb-1 block">Corners</span>
+                  <select
+                    value={scanSafe ? "square" : qrStyle.cornerStyle ?? "square"}
+                    disabled={scanSafe}
+                    onChange={(event) =>
+                      updateQrStyle({ cornerStyle: event.target.value as QrCornerStyle })
+                    }
+                    className="control-input disabled:opacity-50"
+                  >
+                    <option value="square">Square</option>
+                    <option value="rounded">Rounded</option>
+                  </select>
+                </label>
+              </div>
 
               <label className="mt-4 flex items-center justify-between rounded-md border border-[#aa956b]/60 bg-[#f8eed5] px-3 py-3 text-sm font-bold text-[#4d3d29]">
                 Gradient ink
@@ -555,12 +594,12 @@ export default function Home() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="stamp-label mb-3 inline-flex rotate-[-1deg]">Live proof</p>
-                <h1 className="font-serif text-4xl font-semibold leading-tight text-[#302416] sm:text-5xl">
-                  Scan-ready code, styled at the bench.
+                <h1 className="max-w-3xl font-serif text-[2.35rem] font-semibold leading-[1.02] text-[#302416] sm:text-5xl">
+                  Premium code proof, phone-safe by default.
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66563c]">
-                  The preview is the center of the workflow: write content, tune the QR treatment,
-                  then copy or export without hunting through extra panels.
+                  The proof shows the production asset in a card mockup, while the safety gate keeps
+                  scanning reliability separate from visual treatment.
                 </p>
               </div>
               <div className="proof-key">
@@ -570,15 +609,25 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="preview-stage mt-5 grid flex-1 place-items-center rounded-md border border-[#b69c6d]/70 p-5 sm:p-8">
+            <div className="preview-stage mt-5 grid flex-1 place-items-center rounded-md border border-[#b69c6d]/70 p-4 sm:p-8">
               {hasOutput ? (
                 <div className="proof-card">
-                  <div
-                    className={`mx-auto w-full drop-shadow-sm ${
-                      mode === "qr" ? "max-w-[360px]" : "max-w-[520px]"
-                    }`}
-                    dangerouslySetInnerHTML={{ __html: generated.svg }}
-                  />
+                  <div className="proof-card-header">
+                    <span>{mode === "qr" ? "QR proof card" : "Barcode label proof"}</span>
+                    <strong>{scanSafe ? "Phone safe" : "Decorative"}</strong>
+                  </div>
+                  <div className="mock-card">
+                    <div
+                      className={`mx-auto w-full drop-shadow-sm ${
+                        mode === "qr" ? "max-w-[360px]" : "max-w-[540px]"
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: generated.svg }}
+                    />
+                  </div>
+                  <div className="proof-card-footer">
+                    <span>{content.trim()}</span>
+                    <span>{currentType}</span>
+                  </div>
                 </div>
               ) : (
                 <div className="max-w-sm text-center">
@@ -595,7 +644,7 @@ export default function Home() {
               {[
                 ["Mode", currentType],
                 ["Output", hasOutput ? "SVG and PNG ready" : "Not ready"],
-                ["Scan mode", scanSafe ? "Phone-safe" : "Decorative"],
+                ["Scan mode", scanSafe ? "Safe for phones" : "Decorative"],
               ].map(([label, value]) => (
                 <div key={label} className="status-tile">
                   <p>{label}</p>
@@ -608,7 +657,7 @@ export default function Home() {
           <aside className="studio-panel flex flex-col gap-3 p-3 sm:p-4">
             <section className="tool-section">
               <div className="section-heading">
-                <span>03</span>
+                <span>04</span>
                 <div>
                   <p>Ship asset</p>
                   <h2>Export console</h2>
@@ -665,12 +714,28 @@ export default function Home() {
 
             <section className="tool-section">
               <div className="section-heading">
-                <span>04</span>
+                <span>05</span>
                 <div>
                   <p>Readiness</p>
-                  <h2>Details</h2>
+                  <h2>Phone scan checklist</h2>
                 </div>
               </div>
+
+              <ul className="mt-4 grid gap-2 text-sm">
+                {scanChecklist.map((item) => (
+                  <li key={item} className="check-row">
+                    <span aria-hidden="true">OK</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              {mode === "barcode" ? (
+                <p className="mt-3 rounded-md border border-[#d4a15d]/70 bg-[#fff0ce] px-3 py-2 text-xs font-semibold leading-5 text-[#7a4d1c]">
+                  Barcode scan note: phones may need enough distance and light, plus
+                  high-contrast output.
+                </p>
+              ) : null}
 
               <dl className="mt-4 grid gap-2 text-sm">
                 <div className="detail-row">

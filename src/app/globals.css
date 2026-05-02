@@ -38,11 +38,8 @@ button:disabled {
 
 .studio-canvas {
   background:
-    linear-gradient(110deg, rgba(86, 60, 30, 0.18), transparent 34%),
-    radial-gradient(circle at 18% 12%, rgba(255, 251, 232, 0.95), transparent 32%),
-    radial-gradient(circle at 78% 18%, rgba(89, 121, 105, 0.26), transparent 25%),
-    radial-gradient(circle at 82% 78%, rgba(76, 132, 160, 0.15), transparent 30%),
-    linear-gradient(180deg, #efe3ca 0%, #c9b58f 100%);
+    linear-gradient(110deg, rgba(86, 60, 30, 0.12), transparent 34%),
+    linear-gradient(180deg, #f1e5cf 0%, #d0bd99 100%);
 }
 
 .studio-grid {
@@ -90,6 +87,13 @@ button:disabled {
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.66), transparent 42%);
   padding: 1rem;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.safety-section {
+  border-color: rgba(86, 117, 76, 0.62);
+  background:
+    linear-gradient(180deg, rgba(242, 248, 226, 0.94), rgba(222, 235, 202, 0.9)),
+    #e8efd9;
 }
 
 .section-heading {
@@ -248,11 +252,122 @@ button:disabled {
   width: min(100%, 620px);
   border: 1px solid rgba(116, 92, 57, 0.36);
   border-radius: 8px;
-  background: rgba(255, 250, 235, 0.86);
-  padding: clamp(1rem, 4vw, 2rem);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.96), rgba(246, 235, 209, 0.94)),
+    #fffaf0;
+  padding: clamp(0.85rem, 3vw, 1.4rem);
   box-shadow:
-    0 24px 42px rgba(71, 50, 26, 0.2),
+    0 28px 52px rgba(71, 50, 26, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.proof-card-header,
+.proof-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #6d5838;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proof-card-header strong {
+  border: 1px solid rgba(86, 117, 76, 0.54);
+  border-radius: 999px;
+  background: #e4efd2;
+  padding: 0.34rem 0.58rem;
+  color: #385132;
+}
+
+.proof-card-footer {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.proof-card-footer span:first-child {
+  max-width: 64%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mock-card {
+  margin: 0.85rem 0;
+  border: 1px solid rgba(151, 119, 73, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, #ffffff, #fffaf0);
+  padding: clamp(0.85rem, 4vw, 1.5rem);
+  box-shadow:
+    0 14px 24px rgba(84, 61, 33, 0.14),
+    inset 0 0 0 8px rgba(246, 237, 216, 0.42);
+}
+
+.scan-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(86, 117, 76, 0.72);
+  border-radius: 8px;
+  background: #e4efd2;
+  padding: 0.9rem;
+  color: #314628;
+}
+
+.scan-toggle strong,
+.scan-toggle small {
+  display: block;
+}
+
+.scan-toggle strong {
+  font-size: 0.95rem;
+}
+
+.scan-toggle small {
+  margin-top: 0.18rem;
+  color: #526b45;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.scan-safe-card {
+  border: 1px solid rgba(86, 117, 76, 0.48);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.72);
+  padding: 0.85rem;
+  color: #314628;
+}
+
+.scan-safe-card p {
+  color: #58714b;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scan-safe-card strong,
+.scan-safe-card span {
+  display: block;
+}
+
+.scan-safe-card strong {
+  margin-top: 0.35rem;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+}
+
+.scan-safe-card span {
+  margin-top: 0.35rem;
+  color: #5f704f;
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.45;
 }
 
 .status-tile,
@@ -335,6 +450,32 @@ button:disabled {
   padding: 1rem;
 }
 
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  border: 1px solid rgba(170, 149, 107, 0.58);
+  border-radius: 8px;
+  background: rgba(248, 238, 213, 0.86);
+  padding: 0.75rem;
+  color: #3b2e1e;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.check-row span {
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: #dfeacb;
+  color: #385132;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
 @media (max-width: 640px) {
   .studio-topbar,
   .studio-panel,
@@ -347,5 +488,21 @@ button:disabled {
 
   .proof-panel {
     min-height: 520px;
+  }
+
+  .tool-section {
+    padding: 0.9rem;
+  }
+
+  .section-heading h2 {
+    font-size: 1.1rem;
+  }
+
+  .scan-toggle {
+    align-items: flex-start;
+  }
+
+  .mock-card {
+    padding: 0.8rem;
   }
 }

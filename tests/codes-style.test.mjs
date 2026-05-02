@@ -81,3 +81,15 @@ test("home page presents the polished studio workspace", () => {
   assert.match(source, /Phone scan-safe/);
   assert.match(source, /black-on-white QR and barcode/);
 });
+
+test("home page separates phone-safe output from decorative styling", () => {
+  const source = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+
+  assert.match(source, /Phone scan checklist/);
+  assert.match(source, /Scan-safe output is on by default/);
+  assert.match(source, /Safe for phones/);
+  assert.match(source, /Decorative styling/);
+  assert.match(source, /Barcode scan note/);
+  assert.match(source, /distance and light/);
+  assert.match(source, /high-contrast output/);
+});
