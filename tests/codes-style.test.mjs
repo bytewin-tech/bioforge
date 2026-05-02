@@ -79,4 +79,5 @@ test("home page presents the polished studio workspace", () => {
   assert.match(source, /Copy SVG/);
   assert.match(source, /Download PNG/);
   assert.match(source, /Phone scan-safe/);
+  assert.match(source, /black-on-white QR and barcode/);
 });

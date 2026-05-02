@@ -696,7 +696,7 @@ export default function Home() {
               <p className="font-serif text-lg font-semibold text-[#3a2b19]">Studio notes</p>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-[#654f31]">
                 <li>QR styles apply live and carry into SVG and PNG exports.</li>
-                <li>Barcode mode keeps the same ink and paper palette.</li>
+                <li>Scan-safe mode exports black-on-white QR and barcode assets for phones.</li>
                 <li>Use PNG for sharing and SVG for production handoff.</li>
               </ul>
             </section>
