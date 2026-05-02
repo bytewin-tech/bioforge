@@ -16,3 +16,17 @@ Default gates:
 5. Deploy/verify — deploy and verify live URL; report final status.
 
 Each gate must end with a clear `DONE` or `BLOCKED` summary. If Telegram updates are available, send only milestone updates: start, validation, commit, deployment, blocker. Avoid spam.
+
+## Deployment memory
+
+Primary deployment target is **Railway**.
+
+- Project: `outstanding-grace`
+- Environment: `production`
+- Service: `outstanding-grace`
+- Live URL: `https://outstanding-grace-production-c4f7.up.railway.app`
+- Check status from this repo with `railway status`
+- Deploy from this repo with `railway up --detach`
+- Check domain with `railway domain`
+
+Do not default to Netlify/Vercel for Bioforge unless Chia explicitly asks. A Netlify deploy made on 2026-05-02 was accidental/secondary.
