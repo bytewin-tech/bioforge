@@ -39,6 +39,7 @@ test("qrSvg renders custom QR styling options into the SVG", () => {
     gradient: true,
     logoText: "BF",
     frameText: "Scan to open Bioforge",
+    scanSafe: false,
   });
 
   assert.match(svg, /<linearGradient/);
@@ -46,4 +47,36 @@ test("qrSvg renders custom QR styling options into the SVG", () => {
   assert.match(svg, /rx="0\.32"/);
   assert.match(svg, /Scan to open Bioforge/);
   assert.match(svg, />BF</);
+});
+
+test("scan-safe QR output preserves phone-readable defaults", () => {
+  const { qrSvg, barcodeSvg } = loadCodesModule();
+  const qr = qrSvg("https://bioforge.app/launch", {
+    foreground: "#1f3f34",
+    background: "#fff7df",
+    gradient: true,
+    dotStyle: "dots",
+    logoText: "BF",
+    scanSafe: true,
+  });
+  const barcode = barcodeSvg("BF-2026-OVERNIGHT");
+
+  assert.doesNotMatch(qr, /<linearGradient/);
+  assert.doesNotMatch(qr, />BF</);
+  assert.match(qr, /fill="#ffffff"/);
+  assert.match(qr, /<g fill="#000000">/);
+  assert.match(qr, /viewBox="0 0 37 37/);
+  assert.match(barcode, /height="132"/);
+  assert.match(barcode, /x="36" y="36"/);
+});
+
+test("home page presents the polished studio workspace", () => {
+  const source = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+
+  assert.match(source, /Bioforge Studio/);
+  assert.match(source, /Live proof/);
+  assert.match(source, /Export console/);
+  assert.match(source, /Copy SVG/);
+  assert.match(source, /Download PNG/);
+  assert.match(source, /Phone scan-safe/);
 });

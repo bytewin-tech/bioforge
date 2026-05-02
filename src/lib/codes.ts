@@ -375,6 +375,7 @@ export type QrStyleOptions = {
   logoText?: string;
   logoImage?: string;
   frameText?: string;
+  scanSafe?: boolean;
 };
 
 function escapeSvgText(value: string) {
@@ -402,16 +403,17 @@ export function qrSvg(
     typeof foregroundOrOptions === "string"
       ? { foreground: foregroundOrOptions, background }
       : foregroundOrOptions;
-  const foreground = options.foreground ?? "#101828";
-  const backgroundColor = options.background ?? "#ffffff";
-  const accent = options.accent ?? foreground;
-  const dotStyle = options.dotStyle ?? "square";
-  const cornerStyle = options.cornerStyle ?? "square";
-  const quietZone = 4;
+  const scanSafe = options.scanSafe ?? true;
+  const foreground = scanSafe ? "#000000" : options.foreground ?? "#101828";
+  const backgroundColor = scanSafe ? "#ffffff" : options.background ?? "#ffffff";
+  const accent = scanSafe ? foreground : options.accent ?? foreground;
+  const dotStyle = scanSafe ? "square" : options.dotStyle ?? "square";
+  const cornerStyle = scanSafe ? "square" : options.cornerStyle ?? "square";
+  const quietZone = scanSafe ? 6 : 4;
   const totalSize = size + quietZone * 2;
   const frameHeight = options.frameText ? 5 : 0;
-  const fill = options.gradient ? "url(#qr-gradient)" : foreground;
-  const defs = options.gradient
+  const fill = options.gradient && !scanSafe ? "url(#qr-gradient)" : foreground;
+  const defs = options.gradient && !scanSafe
     ? `<defs><linearGradient id="qr-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${foreground}"/><stop offset="100%" stop-color="${accent}"/></linearGradient></defs>`
     : "";
   const cells = modules
@@ -432,11 +434,11 @@ export function qrSvg(
       }),
     )
     .join("");
-  const logoText = options.logoText?.trim().slice(0, 4).toUpperCase();
+  const logoText = scanSafe ? "" : options.logoText?.trim().slice(0, 4).toUpperCase();
   const logoSize = 6.8;
   const logoX = totalSize / 2 - logoSize / 2;
   const logoY = totalSize / 2 - logoSize / 2;
-  const logo = logoText || options.logoImage
+  const logo = logoText || (!scanSafe && options.logoImage)
     ? `<g aria-label="Center logo"><rect x="${logoX}" y="${logoY}" width="${logoSize}" height="${logoSize}" rx="1.4" fill="${backgroundColor}" stroke="${accent}" stroke-width="0.32"/>${options.logoImage ? `<image href="${options.logoImage}" x="${logoX + 0.8}" y="${logoY + 0.8}" width="${logoSize - 1.6}" height="${logoSize - 1.6}" preserveAspectRatio="xMidYMid meet"/>` : ""}${logoText ? `<text x="${totalSize / 2}" y="${totalSize / 2 + 1.05}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="2.6" font-weight="800" fill="${foreground}">${escapeSvgText(logoText)}</text>` : ""}</g>`
     : "";
   const frame = options.frameText
@@ -457,10 +459,10 @@ export function barcodeSvg(value: string, foreground = "#101828", background = "
   }
 
   const encoded = `*${normalized}*`;
-  const narrow = 2;
-  const wide = 5;
-  const height = 96;
-  const margin = 18;
+  const narrow = 3;
+  const wide = 8;
+  const height = 132;
+  const margin = 36;
   let cursor = margin;
   const bars: string[] = [];
 
