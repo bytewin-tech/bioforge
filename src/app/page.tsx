@@ -100,9 +100,9 @@ const qrColorControls: { label: string; key: QrColorKey; fallback: string }[] = 
 
 const scanChecklist = [
   "Scan-safe output is on by default.",
-  "Black ink on white paper is locked for phone scanning.",
+  "Black ink on white paper is locked for phone QR scanning.",
   "Quiet zone stays clear around the code.",
-  "Test from real phone distance and light before printing.",
+  "Use QR for default phone cameras; use barcode scanner apps for Code 39.",
 ];
 
 function svgToDataUrl(svg: string) {
@@ -193,6 +193,7 @@ export default function Home() {
 
   const hasOutput = Boolean(generated.svg && !generated.error);
   const currentType = mode === "qr" ? "QR matrix" : "Code 39 barcode";
+  const phoneScanMode = mode === "qr" && scanSafe;
   const filenameBase = `bioforge-${mode}`;
 
   function updateQrStyle(next: Partial<QrStyleOptions>) {
@@ -422,7 +423,7 @@ export default function Home() {
               <label className="scan-toggle mt-4">
                 <span>
                   <strong>Phone scan-safe</strong>
-                  <small>Default export: black-on-white QR and barcode with no decoration.</small>
+                  <small>Default export: black-on-white QR with no decoration.</small>
                 </span>
                 <input
                   type="checkbox"
@@ -449,11 +450,13 @@ export default function Home() {
 
               <div className="scan-safe-card mt-3">
                 <p>Scan-safe output is on by default</p>
-                <strong>{scanSafe ? "Protected phone output" : "Decorative mode active"}</strong>
+                <strong>{phoneScanMode ? "Protected phone QR" : mode === "barcode" ? "Barcode label mode" : "Decorative mode active"}</strong>
                 <span>
-                  {scanSafe
-                    ? "Decorative styling is disabled so phones get high-contrast output with clear quiet zones."
-                    : "Phone scanning may fail if contrast drops, modules shrink, or logos cover the matrix."}
+                  {phoneScanMode
+                    ? "Decorative styling is disabled so phone cameras get a high-contrast QR with clear quiet zones."
+                    : mode === "barcode"
+                      ? "Most default phone cameras ignore Code 39. Use a barcode scanner app or switch to QR for normal phone scanning."
+                      : "Phone scanning may fail if contrast drops, modules shrink, or logos cover the matrix."}
                 </span>
               </div>
             </section>
@@ -605,7 +608,7 @@ export default function Home() {
               <div className="proof-key">
                 <p>Proof status</p>
                 <span className={hasOutput ? "bg-[#6f8f62]" : "bg-[#c8613f]"} />
-                <strong>{hasOutput ? "Ready" : "Needs input"}</strong>
+                <strong>{hasOutput ? (mode === "barcode" ? "Label ready" : "Ready") : "Needs input"}</strong>
               </div>
             </div>
 
@@ -614,7 +617,7 @@ export default function Home() {
                 <div className="proof-card">
                   <div className="proof-card-header">
                     <span>{mode === "qr" ? "QR proof card" : "Barcode label proof"}</span>
-                    <strong>{scanSafe ? "Phone safe" : "Decorative"}</strong>
+                    <strong>{phoneScanMode ? "Phone QR" : mode === "barcode" ? "Scanner app" : "Decorative"}</strong>
                   </div>
                   <div className="mock-card">
                     <div
@@ -640,11 +643,18 @@ export default function Home() {
               )}
             </div>
 
+            {mode === "barcode" ? (
+              <div className="mt-4 rounded-md border border-[#d4a15d]/70 bg-[#fff0ce] px-4 py-3 text-sm font-semibold leading-6 text-[#7a4a17]">
+                Phone camera note: Code 39 is for barcode scanner apps and label workflows. For
+                normal phone camera scanning, switch to QR Code.
+              </div>
+            ) : null}
+
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               {[
                 ["Mode", currentType],
                 ["Output", hasOutput ? "SVG and PNG ready" : "Not ready"],
-                ["Scan mode", scanSafe ? "Safe for phones" : "Decorative"],
+                ["Scan mode", phoneScanMode ? "Phone QR" : mode === "barcode" ? "Scanner app" : "Decorative"],
               ].map(([label, value]) => (
                 <div key={label} className="status-tile">
                   <p>{label}</p>
@@ -761,7 +771,8 @@ export default function Home() {
               <p className="font-serif text-lg font-semibold text-[#3a2b19]">Studio notes</p>
               <ul className="mt-3 space-y-2 text-sm leading-6 text-[#654f31]">
                 <li>QR styles apply live and carry into SVG and PNG exports.</li>
-                <li>Scan-safe mode exports black-on-white QR and barcode assets for phones.</li>
+                <li>Scan-safe mode exports black-on-white QR assets for phone cameras.</li>
+                <li>Barcode mode is for Code 39 scanner apps and printable labels.</li>
                 <li>Use PNG for sharing and SVG for production handoff.</li>
               </ul>
             </section>
