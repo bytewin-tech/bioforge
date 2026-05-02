@@ -362,21 +362,88 @@ export function createQrMatrix(value: string) {
   return { modules, size };
 }
 
-export function qrSvg(value: string, foreground = "#101828", background = "#ffffff") {
+export type QrDotStyle = "square" | "rounded" | "dots";
+export type QrCornerStyle = "square" | "rounded";
+
+export type QrStyleOptions = {
+  foreground?: string;
+  background?: string;
+  accent?: string;
+  dotStyle?: QrDotStyle;
+  cornerStyle?: QrCornerStyle;
+  gradient?: boolean;
+  logoText?: string;
+  logoImage?: string;
+  frameText?: string;
+};
+
+function escapeSvgText(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function isFinderModule(row: number, col: number, size: number) {
+  const topLeft = row < 7 && col < 7;
+  const topRight = row < 7 && col >= size - 7;
+  const bottomLeft = row >= size - 7 && col < 7;
+  return topLeft || topRight || bottomLeft;
+}
+
+export function qrSvg(
+  value: string,
+  foregroundOrOptions: string | QrStyleOptions = "#101828",
+  background = "#ffffff",
+) {
   const { modules, size } = createQrMatrix(value);
+  const options =
+    typeof foregroundOrOptions === "string"
+      ? { foreground: foregroundOrOptions, background }
+      : foregroundOrOptions;
+  const foreground = options.foreground ?? "#101828";
+  const backgroundColor = options.background ?? "#ffffff";
+  const accent = options.accent ?? foreground;
+  const dotStyle = options.dotStyle ?? "square";
+  const cornerStyle = options.cornerStyle ?? "square";
   const quietZone = 4;
   const totalSize = size + quietZone * 2;
+  const frameHeight = options.frameText ? 5 : 0;
+  const fill = options.gradient ? "url(#qr-gradient)" : foreground;
+  const defs = options.gradient
+    ? `<defs><linearGradient id="qr-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${foreground}"/><stop offset="100%" stop-color="${accent}"/></linearGradient></defs>`
+    : "";
   const cells = modules
     .flatMap((row, rowIndex) =>
-      row.map((dark, colIndex) =>
-        dark
-          ? `<rect x="${colIndex + quietZone}" y="${rowIndex + quietZone}" width="1" height="1"/>`
-          : "",
-      ),
+      row.map((dark, colIndex) => {
+        if (!dark) return "";
+
+        const x = colIndex + quietZone;
+        const y = rowIndex + quietZone;
+        const finder = isFinderModule(rowIndex, colIndex, size);
+        if (dotStyle === "dots" && !finder) {
+          return `<circle cx="${x + 0.5}" cy="${y + 0.5}" r="0.42"/>`;
+        }
+
+        const radius =
+          finder && cornerStyle === "rounded" ? "0.32" : dotStyle === "rounded" ? "0.28" : "0";
+        return `<rect x="${x}" y="${y}" width="1" height="1"${radius !== "0" ? ` rx="${radius}" ry="${radius}"` : ""}/>`;
+      }),
     )
     .join("");
+  const logoText = options.logoText?.trim().slice(0, 4).toUpperCase();
+  const logoSize = 6.8;
+  const logoX = totalSize / 2 - logoSize / 2;
+  const logoY = totalSize / 2 - logoSize / 2;
+  const logo = logoText || options.logoImage
+    ? `<g aria-label="Center logo"><rect x="${logoX}" y="${logoY}" width="${logoSize}" height="${logoSize}" rx="1.4" fill="${backgroundColor}" stroke="${accent}" stroke-width="0.32"/>${options.logoImage ? `<image href="${options.logoImage}" x="${logoX + 0.8}" y="${logoY + 0.8}" width="${logoSize - 1.6}" height="${logoSize - 1.6}" preserveAspectRatio="xMidYMid meet"/>` : ""}${logoText ? `<text x="${totalSize / 2}" y="${totalSize / 2 + 1.05}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="2.6" font-weight="800" fill="${foreground}">${escapeSvgText(logoText)}</text>` : ""}</g>`
+    : "";
+  const frame = options.frameText
+    ? `<text x="${totalSize / 2}" y="${totalSize + 3.4}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="1.8" font-weight="700" letter-spacing="0.08em" fill="${foreground}">${escapeSvgText(options.frameText.slice(0, 42))}</text>`
+    : "";
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}" shape-rendering="crispEdges" role="img" aria-label="Generated QR code"><rect width="${totalSize}" height="${totalSize}" fill="${background}"/><g fill="${foreground}">${cells}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize + frameHeight}" role="img" aria-label="Generated QR code">${defs}<rect width="${totalSize}" height="${totalSize + frameHeight}" rx="2" fill="${backgroundColor}"/><g fill="${fill}">${cells}</g>${logo}${frame}</svg>`;
 }
 
 export function normalizeBarcodeValue(value: string) {
